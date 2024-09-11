@@ -1,6 +1,8 @@
+// controllers/planillaController.js
 const Planilla = require('../models/Planilla');
+const Usuario = require('../models/Usuario');
 
-
+// Crear una nueva planilla
 const crearPlanilla = async (req, res) => {
   try {
     const {
@@ -16,6 +18,7 @@ const crearPlanilla = async (req, res) => {
       id_usuario
     } = req.body;
 
+    // Crear el registro de planilla
     const nuevaPlanilla = await Planilla.create({
       fecha_pago,
       periodo_inicial,
@@ -26,7 +29,7 @@ const crearPlanilla = async (req, res) => {
       monto_total,
       metodo_pago,
       estado_pago,
-      id_usuario
+      id_usuario  // Asegúrate de que esto es el ID del usuario autenticado
     });
 
     res.status(201).json(nuevaPlanilla);
@@ -35,17 +38,6 @@ const crearPlanilla = async (req, res) => {
   }
 };
 
-
-const obtenerPlanilla = async (req, res) => {
-  try {
-    const planilla = await Planilla.findAll();
-    res.json(planilla);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 module.exports = {
-  crearPlanilla,
-  obtenerPlanilla
+  crearPlanilla
 };

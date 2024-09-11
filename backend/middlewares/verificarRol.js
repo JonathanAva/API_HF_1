@@ -1,21 +1,17 @@
-const Usuario = require('../models/Usuario');
-const Role = require('../models/Role');
-
-const verificarRol = (rolPermitido) => {
-  return async (req, res, next) => {
-    try {
-      // Asumimos que el ID del usuario está en req.user.id (esto depende de tu implementación de autenticación)
-      const usuario = await Usuario.findByPk(req.user.id, { include: Role });
-
-      if (usuario && usuario.Role.nombre === rolPermitido) {
-        next();  // Si el rol es permitido, pasa al siguiente middleware/controlador
-      } else {
-        res.status(403).json({ error: 'Acceso denegado. No tienes el rol adecuado.' });
+// middlewares/verificarRol.js
+const verificarRol = (rolIdPermitido) => {
+    return (req, res, next) => {
+      try {
+        // Verifica si el id_roles del usuario (req.user.rol) coincide con el rol permitido
+        if (req.user.rol !== rolIdPermitido) {
+          return res.status(403).json({ error: 'Acceso denegado. No tienes el rol adecuado.' });
+        }
+        next();
+      } catch (error) {
+        return res.status(500).json({ error: 'Error al verificar el rol.' });
       }
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+    };
   };
-};
-
-module.exports = verificarRol;
+  
+  module.exports = verificarRol;
+  
