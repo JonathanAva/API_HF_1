@@ -36,11 +36,15 @@ const crearUsuario = async (req, res) => {
 };
 
 
+// controllers/usuariosController.js
 const iniciarSesion = async (req, res) => {
   const { correo, contraseña } = req.body;
 
   try {
-    const usuario = await Usuario.findOne({ where: { correo } });
+    const usuario = await Usuario.findOne({ 
+      where: { correo }, 
+      include: { model: Role }  // Incluimos el rol del usuario
+    });
     if (!usuario) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -50,9 +54,9 @@ const iniciarSesion = async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Generar el token JWT incluyendo el rol del usuario (id_roles)
+    // Generar el token JWT, incluyendo el rol
     const token = jwt.sign(
-      { id: usuario.id_usuario, rol: usuario.id_roles },  // Incluir id_roles en el token
+      { id: usuario.id_usuario, rol: usuario.Role.nombre },  // Incluimos el nombre del rol
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -62,6 +66,7 @@ const iniciarSesion = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 // Obtener todos los usuarios
