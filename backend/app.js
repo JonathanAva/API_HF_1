@@ -8,6 +8,7 @@ const usuarioRoutes = require('./routes/usuarios');
 const planillaRoutes = require('./routes/planilla');
 const productoRoutes = require('./routes/productos');
 const pacienteRoutes = require('./routes/pacientes');
+const citaRoutes = require('./routes/citas');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/usuario', usuarioRoutes);
 app.use('/planilla', planillaRoutes);
 app.use('/productos', productoRoutes);
 app.use('/pacientes', pacienteRoutes);
+app.use('/citas', citaRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

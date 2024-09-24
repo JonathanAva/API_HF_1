@@ -41,7 +41,7 @@ const Paciente = sequelize.define('Paciente', {
   tableName: 'Pacientes',
 });
 
-// Establecemos la relación
+
 Paciente.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 
 module.exports = Paciente;

@@ -145,6 +145,19 @@ const iniciarSesion = async (req, res) => {
   }
 };
 
+const obtenerClientes = async (req, res) => {
+  try {
+    const clientes = await Usuario.findAll({
+      where: { id_roles: 3 }  // Solo los usuarios con rol id_roles = 3
+    });
+    res.status(200).json(clientes);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los clientes', detalles: error.message });
+  }
+};
+
+
+
 // Obtener todos los usuarios
 const obtenerUsuarios = async (req, res) => {
   try {
@@ -155,10 +168,30 @@ const obtenerUsuarios = async (req, res) => {
   }
 };
 
+
+
+const obtenerDoctores = async (req, res) => {
+  try {
+    const doctores = await Usuario.findAll({
+      where: { id_roles: 2 } // Filtra los usuarios que son doctores
+    });
+
+    if (!doctores.length) {
+      return res.status(404).json({ mensaje: "No se encontraron doctores" });
+    }
+
+    res.status(200).json(doctores);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los doctores', detalles: error.message });
+  }
+};
+
 module.exports = {
   crearUsuario,
   iniciarSesion,
   obtenerUsuarios,
   eliminarUsuarioPorId,
-  eliminarTodosLosUsuarios
+  eliminarTodosLosUsuarios,
+  obtenerClientes,
+  obtenerDoctores
 };

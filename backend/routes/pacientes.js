@@ -1,4 +1,3 @@
-// routes/pacientes.js
 const express = require('express');
 const router = express.Router();
 const pacienteController = require('../controllers/pacienteController');
@@ -11,6 +10,9 @@ router.get('/', pacienteController.obtenerPacientes);
 
 // Obtener un paciente por ID
 router.get('/:id', pacienteController.obtenerPacientePorId);
+
+// Obtener pacientes por cliente (basado en el id_cliente)
+router.get('/cliente/:id_cliente', pacienteController.obtenerPacientesPorCliente);
 
 // Actualizar un paciente
 router.put('/:id', pacienteController.actualizarPaciente);

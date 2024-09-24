@@ -98,10 +98,24 @@ const eliminarPaciente = async (req, res) => {
   }
 };
 
+const obtenerPacientesPorCliente = async (req, res) => {
+    const { id_cliente } = req.params;
+  
+    try {
+      const pacientes = await Paciente.findAll({ where: { id_usuario: id_cliente } });
+      res.status(200).json(pacientes);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener los pacientes', detalles: error.message });
+    }
+  };
+ 
+
 module.exports = {
   crearPaciente,
   obtenerPacientes,
   obtenerPacientePorId,
   actualizarPaciente,
   eliminarPaciente,
+  obtenerPacientesPorCliente,
+  
 };
