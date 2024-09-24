@@ -1,19 +1,31 @@
+const nodemailer = require('nodemailer'); // Importar nodemailer
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 const Role = require('../models/Role');
 const bcrypt = require('bcryptjs');
 
+// Configurar el transportador de Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL_USER, // Tu correo de Gmail
+    pass: process.env.EMAIL_PASS  // Contraseña de aplicación de Gmail generada
+  }
+});
 
 // Crear un nuevo usuario y devolver un token JWT
 const crearUsuario = async (req, res) => {
   try {
     const { nombre, correo, contraseña, id_roles } = req.body;
 
-    // Encriptar la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const contraseñaEncriptada = await bcrypt.hash(contraseña, salt);
+    // Almacenar la contraseña ingresada en una variable temporal
+    const contraseñaIngresada = contraseña;  // Esta es la contraseña que se enviará por correo
 
-    // Crear el nuevo usuario
+    // Encriptar la contraseña para almacenarla en la base de datos
+    const salt = await bcrypt.genSalt(10);
+    const contraseñaEncriptada = await bcrypt.hash(contraseñaIngresada, salt);
+
+    // Crear el nuevo usuario en la base de datos con la contraseña encriptada
     const nuevoUsuario = await Usuario.create({
       nombre,
       correo,
@@ -21,29 +33,95 @@ const crearUsuario = async (req, res) => {
       id_roles
     });
 
-    // Generar el token JWT
+    
     const token = jwt.sign(
-      { id: nuevoUsuario.id_usuario, rol: nuevoUsuario.id_roles }, // Payload del token
-      process.env.JWT_SECRET, // Secreto del token
-      { expiresIn: '1h' } // El token expira en 1 hora
+      { id: nuevoUsuario.id_usuario, rol: nuevoUsuario.id_roles }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' } 
     );
 
-    // Devolver el token y los datos del usuario
-    res.status(201).json({ usuario: nuevoUsuario, token });
+    
+    const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; background-color: #f9f9f9;">
+      <div style="text-align: center;">
+       
+      </div>
+      <h2 style="color: #333; text-align: center;">¡Bienvenido a Huellitas Felices, ${nombre}!</h2>
+      <p style="color: #555;">Tu cuenta ha sido creada exitosamente. A continuación, te proporcionamos tus credenciales de acceso:</p>
+      <ul style="list-style: none; padding: 0;">
+        <li style="color: #333;"><strong>Correo:</strong> ${correo}</li>
+        <li style="color: #333;"><strong>Contraseña:</strong> ${contraseñaIngresada}</li>
+      </ul>
+      <p style="color: #555;">Puedes iniciar sesión en nuestra plataforma con tus credenciales.</p>
+      <p style="color: #333; text-align: center; margin-top: 40px;">
+        
+      </p>
+      <div style="text-align: center; margin-top: 20px;">
+        
+      </div>
+      <p style="color: #999; text-align: center; font-size: 12px;">Saludos cordiales,<br>El equipo de Huellitas Felices</p>
+    </div>
+  `;
+
+  
+    const mailOptions = {
+      from: process.env.EMAIL_USER,        // Correo desde el que se envía
+      to: correo,                          // Correo del nuevo usuario
+      subject: 'Credenciales de Acceso - Huellitas Felices',  // Asunto del correo
+      html: htmlContent                    // Contenido del correo en HTML
+    };
+
+    // Enviar el correo
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error al enviar el correo:', error);
+        return res.status(500).json({ error: 'Error al enviar el correo' });
+      } else {
+        console.log('Correo enviado:', info.response);
+        return res.status(201).json({ usuario: nuevoUsuario, token });
+      }
+    });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+// Eliminar un solo usuario por su ID
+const eliminarUsuarioPorId = async (req, res) => {
+  const { id } = req.params;
 
-// controllers/usuariosController.js
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    await usuario.destroy();  // Eliminar el usuario
+    res.status(200).json({ mensaje: 'Usuario eliminado exitosamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Eliminar todos los usuarios
+const eliminarTodosLosUsuarios = async (req, res) => {
+  try {
+    await Usuario.destroy({ where: {}, truncate: true });
+    res.status(200).json({ mensaje: "Todos los usuarios han sido eliminados." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Iniciar sesión y devolver un token JWT
 const iniciarSesion = async (req, res) => {
   const { correo, contraseña } = req.body;
 
   try {
-    const usuario = await Usuario.findOne({ 
-      where: { correo }, 
-      include: { model: Role }  // Incluimos el rol del usuario
+    const usuario = await Usuario.findOne({
+      where: { correo },
+      include: { model: Role }  // Incluir el rol del usuario
     });
     if (!usuario) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -56,7 +134,7 @@ const iniciarSesion = async (req, res) => {
 
     // Generar el token JWT, incluyendo el rol
     const token = jwt.sign(
-      { id: usuario.id_usuario, rol: usuario.Role.nombre },  // Incluimos el nombre del rol
+      { id: usuario.id_usuario, rol: usuario.Role.nombre },  // Incluir el nombre del rol
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -66,8 +144,6 @@ const iniciarSesion = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
 
 // Obtener todos los usuarios
 const obtenerUsuarios = async (req, res) => {
@@ -81,6 +157,8 @@ const obtenerUsuarios = async (req, res) => {
 
 module.exports = {
   crearUsuario,
-  iniciarSesion,  // Exportar el controlador de inicio de sesión
-  obtenerUsuarios
+  iniciarSesion,
+  obtenerUsuarios,
+  eliminarUsuarioPorId,
+  eliminarTodosLosUsuarios
 };
