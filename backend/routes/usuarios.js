@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { crearUsuario, obtenerUsuarios, obtenerClientes, iniciarSesion, eliminarUsuarioPorId, eliminarTodosLosUsuarios, obtenerDoctores } = require('../controllers/usuariosController');
-
+const { obtenerUsuariosPorRoles } = require('../controllers/usuarioController');
 // Ruta para crear un nuevo usuario
 router.post('/create', crearUsuario);
 
@@ -21,5 +21,7 @@ router.delete('/eliminar/:id', eliminarUsuarioPorId);
 router.delete('/eliminar-todos', eliminarTodosLosUsuarios);
 
 router.get('/doctores', obtenerDoctores);
+
+router.get('/usuarios/roles', obtenerUsuariosPorRoles);
 
 module.exports = router;

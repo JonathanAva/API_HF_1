@@ -186,6 +186,20 @@ const obtenerDoctores = async (req, res) => {
   }
 };
 
+
+const obtenerUsuariosPorRoles = async (req, res) => {
+  try {
+    const usuarios = await Usuario.findAll({
+      where: {
+        id_roles: [1, 2, 4], // Filtra los usuarios por estos roles
+      },
+    });
+    res.status(200).json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   crearUsuario,
   iniciarSesion,
@@ -193,5 +207,6 @@ module.exports = {
   eliminarUsuarioPorId,
   eliminarTodosLosUsuarios,
   obtenerClientes,
-  obtenerDoctores
+  obtenerDoctores,
+  obtenerUsuariosPorRoles
 };

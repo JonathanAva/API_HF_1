@@ -117,6 +117,8 @@ const obtenerPlanillas = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   crearPlanilla,
   editarPlanilla,
