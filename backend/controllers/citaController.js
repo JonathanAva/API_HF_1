@@ -105,6 +105,32 @@ const actualizarCita = async (req, res) => {
   }
 };
 
+const obtenerCitasDelUsuario = async (req, res) => {
+  try {
+    // El ID del usuario debe ser obtenido del token JWT decodificado por el middleware
+    const userId = req.user.id;
+
+    // Buscar las citas del usuario autenticado (id_cliente debe coincidir con el userId)
+    const citas = await Cita.findAll({
+      where: { id_cliente: userId },
+      include: [
+        { model: Usuario, as: 'cliente', attributes: ['nombre'] },
+        { model: Usuario, as: 'doctor', attributes: ['nombre'] },
+        { model: Paciente, as: 'paciente', attributes: ['nombre'] }
+      ]
+    });
+
+    if (!citas.length) {
+      return res.status(404).json({ message: 'No tienes citas programadas' });
+    }
+
+    res.status(200).json(citas);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener la cita', error: error.message });
+  }
+};
+
+
 // Eliminar una cita
 const eliminarCita = async (req, res) => {
   const { id } = req.params;
@@ -130,4 +156,5 @@ module.exports = {
   crearCita,
   actualizarCita,
   eliminarCita,
+  obtenerCitasDelUsuario
 };

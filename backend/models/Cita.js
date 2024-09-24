@@ -1,4 +1,3 @@
-// models/cita.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Usuario = require('./Usuario'); // Asegúrate de importar el modelo Usuario
@@ -22,6 +21,14 @@ const Cita = sequelize.define('Cita', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'activa', // Estado por defecto
+  },
+  id_cliente: {  // Asegúrate de que el campo id_cliente esté definido
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Usuario,  // Relaciona con el modelo Usuario
+      key: 'id_usuario'
+    }
   },
 }, {
   tableName: 'Citas',
