@@ -194,6 +194,8 @@ const obtenerUsuariosPorRoles = async (req, res) => {
         id_roles: [1, 2, 4], // Filtra los usuarios por estos roles
       },
     });
+
+    console.log(usuarios); // Agrega esto para verificar los datos obtenidos
     res.status(200).json(usuarios);
   } catch (error) {
     res.status(500).json({ error: error.message });

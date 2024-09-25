@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { crearUsuario, obtenerUsuarios, obtenerClientes, iniciarSesion, eliminarUsuarioPorId, eliminarTodosLosUsuarios, obtenerDoctores } = require('../controllers/usuariosController');
-const { obtenerUsuariosPorRoles } = require('../controllers/usuarioController');
+const { obtenerUsuariosPorRoles } = require('../controllers/usuariosController');
+
+
 // Ruta para crear un nuevo usuario
 router.post('/create', crearUsuario);
 
