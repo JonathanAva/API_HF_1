@@ -14,4 +14,10 @@ router.put('/:id/edit', planillaController.editarPlanilla);
 // Ruta para eliminar una planilla existente por su ID
 router.delete('/:id', planillaController.eliminarPlanilla);
 
+// Ruta para obtener planillas de un empleado específico por su ID
+router.get('/usuario/:id_usuario', planillaController.obtenerPlanillasPorUsuario);
+
+// Ruta para obtener una planilla específica por su ID
+router.get('/:id', planillaController.obtenerPlanillaPorId);
+
 module.exports = router;
