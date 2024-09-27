@@ -10,6 +10,7 @@ const productoRoutes = require('./routes/productos');
 const pacienteRoutes = require('./routes/pacientes');
 const citaRoutes = require('./routes/citas');
 const paypalRoutes = require('./routes/paypalRoutes'); 
+const chatbotRoutes = require('./routes/chatbot');
 
 const app = express();
 
@@ -27,7 +28,7 @@ app.use('/productos', productoRoutes);
 app.use('/pacientes', pacienteRoutes);
 app.use('/citas', citaRoutes);
 app.use('/paypal', paypalRoutes); 
-
+app.use('/chatbot', chatbotRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
