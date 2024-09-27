@@ -191,16 +191,22 @@ const obtenerUsuariosPorRoles = async (req, res) => {
   try {
     const usuarios = await Usuario.findAll({
       where: {
-        id_roles: [1, 2, 4], // Filtra los usuarios por estos roles
-      },
+        id_roles: [1, 2, 4], // Filtra los usuarios con roles 1, 2 y 4
+      }
     });
 
-    console.log(usuarios); // Agrega esto para verificar los datos obtenidos
-    res.status(200).json(usuarios);
+    if (!usuarios.length) {
+      return res.status(404).json({ mensaje: "No se encontraron usuarios con los roles especificados." });
+    }
+
+    res.status(200).json(usuarios); // Devuelve los usuarios con roles 1, 2 y 4
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Error al obtener los usuarios', detalles: error.message });
   }
 };
+
+
+
 
 module.exports = {
   crearUsuario,

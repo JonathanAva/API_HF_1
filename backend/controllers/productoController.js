@@ -47,23 +47,21 @@ const actualizarStock = async (req, res) => {
   }
 };
 
-
+// Eliminar un producto
 const eliminarProducto = async (req, res) => {
-    const { id } = req.params;
-    try {
-      const producto = await Producto.findByPk(id);
-      if (!producto) {
-        return res.status(404).json({ error: 'Producto no encontrado' });
-      }
-  
-      await producto.destroy(); // Eliminar el producto
-      res.json({ mensaje: 'Producto eliminado con éxito' });
-    } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar el producto' });
+  const { id } = req.params;
+  try {
+    const producto = await Producto.findByPk(id);
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
-  };
-  
-  
+
+    await producto.destroy(); // Eliminar el producto
+    res.json({ mensaje: 'Producto eliminado con éxito' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el producto' });
+  }
+};
 
 module.exports = {
   crearProducto,
